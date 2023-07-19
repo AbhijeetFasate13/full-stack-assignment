@@ -2,6 +2,36 @@ const express = require('express')
 const app = express()
 const port = 3001
 
+
+// Function to generate a token (example implementation)
+function generateToken() {
+  // Your token generation logic here
+  // Return the generated token
+  return "exampleToken";
+}
+
+// Function to validate if the user is an admin (example implementation)
+function isAdmin(user) {
+  // Your admin validation logic here
+  // Return true if the user is an admin, false otherwise
+  return user.isAdmin;
+}
+
+// Function to get user submissions for a specific problem (example implementation)
+function getUserSubmissions(userId, problemId) {
+  // Your code to fetch user submissions for the given user ID and problem ID
+  // Return the user's submissions
+  return [];
+}
+
+// Function to add a new problem by an admin (example implementation)
+function addProblem(problem) {
+  // Your code to add a new problem to the list of problems
+  // Return a response indicating the success or failure of adding the problem
+  return { success: true, message: "Problem added successfully" };
+}
+
+
 const USERS = [];
 
 const QUESTIONS = [{
@@ -19,49 +49,65 @@ const SUBMISSION = [
 ]
 
 app.post('/signup', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  //getting email and password from user
+  const {email,password} = req.body;
 
+  //checking if user already exists
+  const existingUser = USERS.find( user => user.email === email);
+  if(existingUser){
+    return res.status(400).json({message:"User Already Exists!"});
+  }
 
-  //Store email and password (as is for now) in the USERS array above (only if the user with the given email doesnt exist)
-
-
-  // return back 200 status code to the client
-  res.send('Hello World!')
+  //else pushing new user data into USERS's array
+  USERS.push({email,password});
+  res.status(200).json({message:"User Registered Successfully!"});
 })
 
 app.post('/login', function(req, res) {
-  // Add logic to decode body
-  // body should have email and password
+  //getting user id and password
+  const {email,password} = req.body;
 
-  // Check if the user with the given email exists in the USERS array
-  // Also ensure that the password is the same
+  //checking if user exists!
+  const checkUser = USERS.find(user=>user.email === email);
+  if(!checkUser){
+    return res.status(401).json({message:"User does not exists!"});
+  }
 
+  //checking for password, if matches then generate token
+  if(checkUser.password===password){
+    const token = generateToken();
+    return res.status(200).json({token : token})
+  }
 
-  // If the password is the same, return back 200 status code to the client
-  // Also send back a token (any random string will do for now)
-  // If the password is not the same, return back 401 status code to the client
-
-
-  res.send('Hello World from route 2!')
+  //else prompt user to try again 
+  return res.status(401).json({message:"User ID or Password Invalid, try again!"});
 })
 
 app.get('/questions', function(req, res) {
 
   //return the user all the questions in the QUESTIONS array
-  res.send("Hello World from route 3!")
+  res.status(200).send(QUESTIONS);
 })
 
 app.get("/submissions", function(req, res) {
    // return the users submissions for this problem
-  res.send("Hello World from route 4!")
+  res.status(200).send(SUBMISSION);
 });
 
 
 app.post("/submissions", function(req, res) {
-   // let the user submit a problem, randomly accept or reject the solution
-   // Store the submission in the SUBMISSION array above
-  res.send("Hello World from route 4!")
+  //getting submission from user
+  const submission = req.body;
+
+  //Randomly accepting or rejecting receieved solution
+  const isAccepted = Math.random()<0.5;
+
+  //Assigning isAccepted flag to submission object
+  submission.isAccepted=isAccepted;
+
+  //push submission to SUBMISSION's array
+  SUBMISSION.push(submission)
+  res.status(200).json({message:"Submission receieved!"});
 });
 
 // leaving as hard todos
