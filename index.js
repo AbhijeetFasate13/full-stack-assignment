@@ -110,22 +110,24 @@ app.post("/submissions", function(req, res) {
   res.status(200).json({message:"Submission receieved!"});
 });
 
-// leaving as hard todos
-// Create a route that lets an admin add a new problem
-// ensure that only admins can do that.
-
+//posting new questions route
 app.post('/problems',(req,res)=>{
+
+  //checking if admin
   const isAdmin = req.header['x-admin']==='true';
   if(!isAdmin){
     return res.status(401).json({message:"Not an admin!"});
   }
 
+  //getting various inputs from user for question
   const {title,description,testCases}=req.body;
   const newProblem = {
     title,
     description,
     testCases
   }
+
+  //adding question to QUESTIoN array 
   QUESTIONS.push(newProblem);
   res.status(200).json({message:"Added question successfully!"});
 })
