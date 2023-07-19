@@ -3,35 +3,6 @@ const app = express()
 const port = 3001
 
 
-// Function to generate a token (example implementation)
-function generateToken() {
-  // Your token generation logic here
-  // Return the generated token
-  return "exampleToken";
-}
-
-// Function to validate if the user is an admin (example implementation)
-function isAdmin(user) {
-  // Your admin validation logic here
-  // Return true if the user is an admin, false otherwise
-  return user.isAdmin;
-}
-
-// Function to get user submissions for a specific problem (example implementation)
-function getUserSubmissions(userId, problemId) {
-  // Your code to fetch user submissions for the given user ID and problem ID
-  // Return the user's submissions
-  return [];
-}
-
-// Function to add a new problem by an admin (example implementation)
-function addProblem(problem) {
-  // Your code to add a new problem to the list of problems
-  // Return a response indicating the success or failure of adding the problem
-  return { success: true, message: "Problem added successfully" };
-}
-
-
 const USERS = [];
 
 const QUESTIONS = [{
@@ -47,6 +18,20 @@ const QUESTIONS = [{
 const SUBMISSION = [
 
 ]
+
+// Function to generate a token
+function generateToken() {
+  // Generate a random token
+  const token = Math.random().toString(36).substring(2);
+  return token;
+}
+
+// Function to add a new problem by an admin (example implementation)
+function addProblem(problem) {
+  // Assuming you have an array called PROBLEMS to store the problems
+  QUESTIONS.push(problem);
+  return { success: true, message: "Problem added successfully" };
+}
 
 app.post('/signup', function(req, res) {
   //getting email and password from user
@@ -119,7 +104,7 @@ app.post('/problems',(req,res)=>{
     return res.status(401).json({message:"Not an admin!"});
   }
 
-  //getting various inputs from user for question
+  //getting inputs for problem
   const {title,description,testCases}=req.body;
   const newProblem = {
     title,
@@ -127,9 +112,16 @@ app.post('/problems',(req,res)=>{
     testCases
   }
 
-  //adding question to QUESTIoN array 
-  QUESTIONS.push(newProblem);
+  //calling addProblem function to add problem in Questions array
+  const added = addProblem(newProblem);
+  //checking if added successfully
+  if(added.success){
   res.status(200).json({message:"Added question successfully!"});
+  }
+  else
+  {
+  return res.status(500).json({message:"Failed to add problem"});
+  }
 })
 
 app.listen(port, function() {
