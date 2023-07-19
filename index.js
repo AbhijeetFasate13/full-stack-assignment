@@ -3,7 +3,11 @@ const app = express()
 const port = 3001
 
 
-const USERS = [];
+const USERS = [{
+  email:"abc@outlook.com",
+  password:"xyz123",
+  isAdmin:true
+}];
 
 const QUESTIONS = [{
     title: "Two states",
@@ -15,9 +19,7 @@ const QUESTIONS = [{
 }];
 
 
-const SUBMISSION = [
-
-]
+const SUBMISSION = []
 
 // Function to generate a token
 function generateToken() {
